@@ -6,7 +6,9 @@ module.exports = {
   entry: "./src/index.js",
   plugins: [
     new HtmlWebpackPlugin({
+      hash: true,
       title: "Output Management",
+      template: "./src/index.html",
     }),
   ],
   output: {
