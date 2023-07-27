@@ -116,3 +116,11 @@ body {
     border: none;
     color:white;
 }
+
+.todo-item{
+    width: 80%;
+    padding: 1.25rem 1.25rem;
+    background-color: white;
+    border-radius: 5px;
+    margin: 5px auto;
+}

@@ -65,4 +65,10 @@ addProjectBtn.innerText = 'Add project';
 addProjectBtn.classList.add('addproject-btn');
 addProjectDiv.appendChild(addProjectBtn);
 
+const projectItem1 = document.createElement('div');
+const projectItem2 = document.createElement('div');
+projectItem1.classList.add('todo-item');
+projectItem2.classList.add('todo-item');
+mainContent.appendChild(projectItem1);
+mainContent.appendChild(projectItem2);
  
