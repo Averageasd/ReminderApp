@@ -109,6 +109,11 @@ body {
     border: 1px solid #e5e5e5;
 }
 
+.projectname-input:focus{
+    outline: none;
+    border: 2px solid #826aed;
+}
+
 .addproject-btn{
     flex-grow: 2;
     padding: 0.25rem 0.5rem;
