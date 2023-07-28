@@ -23,7 +23,25 @@ function addNewProject(e) {
   projects.push(project);
   const projectItem = createNewProject(project.getName());
   projectList.appendChild(projectItem);
-  newProjectInput.value = '';
+  projectItem.addEventListener("click", createDynamicInput);
+  newProjectInput.value = "";
+}
+
+function createDynamicInput(e) {
+  e.target.removeEventListener("click", createDynamicInput);
+  const curProjectName = e.target.innerText;
+  e.target.innerHTML = "";
+  const editProjectNameInput = document.createElement("input");
+  e.target.appendChild(editProjectNameInput);
+  editProjectNameInput.focus();
+  editProjectNameInput.addEventListener("blur", function () {
+    e.target.addEventListener('click', createDynamicInput);
+    if (editProjectNameInput.value.length === 0){
+      e.target.innerText = curProjectName;
+      return;
+    }
+    e.target.innerText = editProjectNameInput.value;
+  });
 }
 
 function createNewProject(projectName) {
