@@ -11,6 +11,8 @@ const newProjectInput = document.querySelector(".projectname-input");
 const addProjectBtn = document.querySelector(".addproject-btn");
 addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
+const mainConent = document.querySelector(".main-content");
+const listTitleDisplay = document.querySelector(".project-title");
 const projects = [];
 let prjPointer = projects.length === 0 ? null : projects[0];
 
@@ -68,6 +70,7 @@ function displayTodoItemsOfProjects(e) {
   prjPointer =
     projects[Array.from(projectList.children).indexOf(selectedProject)];
   console.log(Array.from(projectList.children).indexOf(selectedProject));
+  listTitleDisplay.innerText = prjPointer.getName();
   console.log(prjPointer);
 }
 
@@ -97,6 +100,7 @@ function editProjectName(e) {
 function deleteProject(e) {
   e.stopPropagation();
   const projectItem = e.target.parentNode.parentNode;
+  
   const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
   projects.splice(indexOfCurPrj, 1);
   renderProjectList();
