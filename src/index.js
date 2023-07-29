@@ -38,13 +38,12 @@ function createNewProject(projectName) {
     e.preventDefault();
     e.stopPropagation();
     const curProjectName = projectNameContainer.innerText;
-    const editProjectNameInput = createDynamicElement("input");
+    const editProjectNameInput = createDynamicElement("input", null);
     projectNameContainer.innerHTML = "";
     projectNameContainer.appendChild(editProjectNameInput);
     editProjectNameInput.focus();
     editProjectNameInput.addEventListener("blur", function () {
       if (editProjectNameInput.value.length === 0) {
-        console.log("project name is ", curProjectName);
         projectNameContainer.innerText = curProjectName;
         return;
       }
@@ -53,6 +52,11 @@ function createNewProject(projectName) {
   });
   editProjectDiv.appendChild(editSymbol);
   const deleteSymbol = createImage(deleteImage, 'delete-symbol');
+  deleteSymbol.addEventListener('click', function (e){
+    e.stopPropagation();
+    e.preventDefault();
+    projectList.removeChild(projectItem);
+  });
   editProjectDiv.appendChild(deleteSymbol);
   projectItem.appendChild(projectNameContainer);
   projectItem.appendChild(editProjectDiv);
