@@ -12,6 +12,7 @@ const addProjectBtn = document.querySelector(".addproject-btn");
 addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
 const projects = [];
+let prjPointer = projects.length === 0 ? null : projects[0];
 
 function renderProjectList() {
   projectList.innerHTML = "";
@@ -49,7 +50,25 @@ function createNewProject(projectName) {
   editProjectDiv.appendChild(deleteSymbol);
   projectItem.appendChild(projectNameContainer);
   projectItem.appendChild(editProjectDiv);
+  projectItem.addEventListener("click", displayTodoItemsOfProjects);
   return projectItem;
+}
+
+function displayTodoItemsOfProjects(e) {
+  let selectedProject = null;
+  if (e.target.classList.contains("project-item")) {
+    selectedProject = e.target;
+  } else if (
+    e.target.classList.contains("edit-project-div") ||
+    e.target.classList.contains("project-name-container")
+  ) {
+    selectedProject = e.target.parentNode;
+  }
+
+  prjPointer =
+    projects[Array.from(projectList.children).indexOf(selectedProject)];
+  console.log(Array.from(projectList.children).indexOf(selectedProject));
+  console.log(prjPointer);
 }
 
 function editProjectName(e) {
@@ -78,8 +97,6 @@ function editProjectName(e) {
 function deleteProject(e) {
   e.stopPropagation();
   const projectItem = e.target.parentNode.parentNode;
-  console.log(projectItem);
-  console.log(e.target.parentNode);
   const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
   projects.splice(indexOfCurPrj, 1);
   renderProjectList();

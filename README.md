@@ -6,4 +6,8 @@
 - [x] Edit the project name by clicking on the edit symbol.
 - [x] Delete project by clicking on the delete symbol.
 - [x] Refactor code. Make functions to delete and edit projects.
+- [x] Log some text when click on a project item.
+- [x] Create a project pointer that keeps track of the currently selected project.
+- [x] Log the project info after it gets clicked on.
+- [ ] Display project's name in main content div.
 - [ ] View to-do items of a project by clicking on this project.
