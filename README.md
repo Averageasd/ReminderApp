@@ -5,4 +5,5 @@
 - [x] Create functions to create html non-image elements and images.
 - [x] Edit the project name by clicking on the edit symbol.
 - [x] Delete project by clicking on the delete symbol.
+- [x] Refactor code. Make functions to delete and edit projects.
 - [ ] View to-do items of a project by clicking on this project.

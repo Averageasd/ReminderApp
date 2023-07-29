@@ -14,6 +14,7 @@ const projectList = document.querySelector(".project-div");
 const projects = [];
 
 function renderProjectList() {
+  projectList.innerHTML = "";
   for (const project of projects) {
     const projectItem = createNewProject(project.getName());
     projectList.appendChild(projectItem);
@@ -21,7 +22,11 @@ function renderProjectList() {
 }
 
 function addNewProject(e) {
-  const project = new Project(newProjectInput.value);
+  let newProjectName = newProjectInput.value;
+  if (newProjectName.length === 0) {
+    newProjectName = `untitled project(${projects.length + 1})`;
+  }
+  const project = new Project(newProjectName);
   projects.push(project);
   const projectItem = createNewProject(project.getName());
   projectList.appendChild(projectItem);
@@ -30,40 +35,54 @@ function addNewProject(e) {
 
 function createNewProject(projectName) {
   const projectItem = createDynamicElement("div", "project-item");
-  const projectNameContainer = createDynamicElement("div","project-name-container");
+  const projectNameContainer = createDynamicElement(
+    "div",
+    "project-name-container"
+  );
   projectNameContainer.innerText = projectName;
   const editProjectDiv = createDynamicElement("div", "edit-project-div");
   const editSymbol = createImage(editImage, "edit-symbol");
-  editSymbol.addEventListener("click", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const curProjectName = projectNameContainer.innerText;
-    const editProjectNameInput = createDynamicElement("input", null);
-    projectNameContainer.innerHTML = "";
-    projectNameContainer.appendChild(editProjectNameInput);
-    editProjectNameInput.focus();
-    editProjectNameInput.addEventListener("blur", function () {
-      if (editProjectNameInput.value.length === 0) {
-        projectNameContainer.innerText = curProjectName;
-        return;
-      }
-      projectNameContainer.innerText = editProjectNameInput.value;
-    });
-  });
+  editSymbol.addEventListener("click", editProjectName);
   editProjectDiv.appendChild(editSymbol);
-  const deleteSymbol = createImage(deleteImage, 'delete-symbol');
-  deleteSymbol.addEventListener('click', function (e){
-    e.stopPropagation();
-    e.preventDefault();
-    const indexOfCurPrj = Array.from(projectItem.parentNode.children).indexOf(projectItem);
-    projects.splice(indexOfCurPrj, 1);
-    projectList.removeChild(projectItem);
-    console.log(projects);
-  });
+  const deleteSymbol = createImage(deleteImage, "delete-symbol");
+  deleteSymbol.addEventListener("click", deleteProject);
   editProjectDiv.appendChild(deleteSymbol);
   projectItem.appendChild(projectNameContainer);
   projectItem.appendChild(editProjectDiv);
   return projectItem;
+}
+
+function editProjectName(e) {
+  e.stopPropagation();
+  const projectItem = e.target.parentNode.parentNode;
+  const projectNameContainer = Array.from(projectItem.children).find((node) =>
+    node.classList.contains("project-name-container")
+  );
+  const indexOfCurProject = Array.from(projectList.children).indexOf(
+    projectItem
+  );
+  const curProjectName = projectNameContainer.innerText;
+  const editProjectNameInput = createDynamicElement("input", null);
+  projectNameContainer.innerHTML = "";
+  projectNameContainer.appendChild(editProjectNameInput);
+  editProjectNameInput.focus();
+  editProjectNameInput.addEventListener("blur", function () {
+    projectNameContainer.innerText =
+      editProjectNameInput.value.length === 0
+        ? curProjectName
+        : editProjectNameInput.value;
+    projects[indexOfCurProject].setName(projectNameContainer.innerText);
+  });
+}
+
+function deleteProject(e) {
+  e.stopPropagation();
+  const projectItem = e.target.parentNode.parentNode;
+  console.log(projectItem);
+  console.log(e.target.parentNode);
+  const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
+  projects.splice(indexOfCurPrj, 1);
+  renderProjectList();
 }
 
 function createDynamicElement(type, cssClass) {
