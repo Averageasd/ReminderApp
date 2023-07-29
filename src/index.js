@@ -55,7 +55,10 @@ function createNewProject(projectName) {
   deleteSymbol.addEventListener('click', function (e){
     e.stopPropagation();
     e.preventDefault();
+    const indexOfCurPrj = Array.from(projectItem.parentNode.children).indexOf(projectItem);
+    projects.splice(indexOfCurPrj, 1);
     projectList.removeChild(projectItem);
+    console.log(projects);
   });
   editProjectDiv.appendChild(deleteSymbol);
   projectItem.appendChild(projectNameContainer);
