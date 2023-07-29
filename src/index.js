@@ -2,6 +2,8 @@ import ReminderItem from "./reminderItem";
 import Project from "./project";
 import "./style.css";
 import "date-fns/endOfDay";
+import deleteImage from "./images/delete.svg";
+import editImage from "./images/edit.svg";
 
 import { endOfDay } from "date-fns";
 
@@ -23,30 +25,51 @@ function addNewProject(e) {
   projects.push(project);
   const projectItem = createNewProject(project.getName());
   projectList.appendChild(projectItem);
-  projectItem.addEventListener("click", createDynamicInput);
   newProjectInput.value = "";
 }
 
-function createDynamicInput(e) {
-  e.target.removeEventListener("click", createDynamicInput);
-  const curProjectName = e.target.innerText;
-  e.target.innerHTML = "";
-  const editProjectNameInput = document.createElement("input");
-  e.target.appendChild(editProjectNameInput);
-  editProjectNameInput.focus();
-  editProjectNameInput.addEventListener("blur", function () {
-    e.target.addEventListener('click', createDynamicInput);
-    if (editProjectNameInput.value.length === 0){
-      e.target.innerText = curProjectName;
-      return;
-    }
-    e.target.innerText = editProjectNameInput.value;
-  });
-}
-
 function createNewProject(projectName) {
-  const projectItem = document.createElement("div");
-  projectItem.innerText = projectName;
+  const projectItem = createDynamicElement("div", "project-item");
+  const projectNameContainer = createDynamicElement("div","project-name-container");
+  projectNameContainer.innerText = projectName;
+  const editProjectDiv = createDynamicElement("div", "edit-project-div");
+  const editSymbol = createImage(editImage, "edit-symbol");
+  editSymbol.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const curProjectName = projectNameContainer.innerText;
+    const editProjectNameInput = createDynamicElement("input");
+    projectNameContainer.innerHTML = "";
+    projectNameContainer.appendChild(editProjectNameInput);
+    editProjectNameInput.focus();
+    editProjectNameInput.addEventListener("blur", function () {
+      if (editProjectNameInput.value.length === 0) {
+        console.log("project name is ", curProjectName);
+        projectNameContainer.innerText = curProjectName;
+        return;
+      }
+      projectNameContainer.innerText = editProjectNameInput.value;
+    });
+  });
+  editProjectDiv.appendChild(editSymbol);
+  const deleteSymbol = createImage(deleteImage, 'delete-symbol');
+  editProjectDiv.appendChild(deleteSymbol);
+  projectItem.appendChild(projectNameContainer);
+  projectItem.appendChild(editProjectDiv);
   return projectItem;
 }
+
+function createDynamicElement(type, cssClass) {
+  const element = document.createElement(type);
+  if (cssClass) element.classList.add(cssClass);
+  return element;
+}
+
+function createImage(image, cssClass) {
+  const img = new Image();
+  img.src = image;
+  img.classList.add(cssClass);
+  return img;
+}
+
 renderProjectList();
