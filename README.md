@@ -10,4 +10,6 @@
 - [x] Create a project pointer that keeps track of the currently selected project.
 - [x] Log the project info after it gets clicked on.
 - [x] Display project's name in main content div.
+- [x] Show error message when user does not enter project name or project name already exists.
+- [x] when the currently selected project is deleted, its name in main content div should also be deleted.
 - [ ] View to-do items of a project by clicking on this project.

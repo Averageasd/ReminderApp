@@ -9,12 +9,14 @@ import { endOfDay } from "date-fns";
 
 const newProjectInput = document.querySelector(".projectname-input");
 const addProjectBtn = document.querySelector(".addproject-btn");
+const projectNameErrorMsg = document.querySelector(".error-message");
 addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
 const mainConent = document.querySelector(".main-content");
 const listTitleDisplay = document.querySelector(".project-title");
 const projects = [];
 let prjPointer = projects.length === 0 ? null : projects[0];
+const projectNameSet = new Set();
 
 function renderProjectList() {
   projectList.innerHTML = "";
@@ -26,22 +28,43 @@ function renderProjectList() {
 
 function addNewProject(e) {
   let newProjectName = newProjectInput.value;
-  if (newProjectName.length === 0) {
-    newProjectName = `untitled project(${projects.length + 1})`;
+  if (!projectNameChecker(newProjectName)) {
+    displayInvalidProjectNameMsg();
+    return;
   }
+  projectNameSet.add(newProjectName);
   const project = new Project(newProjectName);
   projects.push(project);
   const projectItem = createNewProject(project.getName());
   projectList.appendChild(projectItem);
+  hideErrorMessage();
+  clearProjectNameInput();
+}
+
+function hideErrorMessage() {
+  projectNameErrorMsg.innerText = "";
+  projectNameErrorMsg.classList.add("invisible");
+}
+
+function clearProjectNameInput() {
   newProjectInput.value = "";
+}
+
+function projectNameChecker(projectName) {
+  if (projectName.length === 0 || projectNameSet.has(projectName)) {
+    return false;
+  }
+  return true;
+}
+
+function displayInvalidProjectNameMsg() {
+  projectNameErrorMsg.innerText = "project name is empty or already exists!!!";
+  projectNameErrorMsg.classList.remove("invisible");
 }
 
 function createNewProject(projectName) {
   const projectItem = createDynamicElement("div", "project-item");
-  const projectNameContainer = createDynamicElement(
-    "div",
-    "project-name-container"
-  );
+  const projectNameContainer = createDynamicElement("div", "project-name-container");
   projectNameContainer.innerText = projectName;
   const editProjectDiv = createDynamicElement("div", "edit-project-div");
   const editSymbol = createImage(editImage, "edit-symbol");
@@ -100,8 +123,11 @@ function editProjectName(e) {
 function deleteProject(e) {
   e.stopPropagation();
   const projectItem = e.target.parentNode.parentNode;
-  
   const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
+  const projectToBeDeleted = projects[indexOfCurPrj];
+  if (prjPointer == projectToBeDeleted){
+    listTitleDisplay.innerText = '';
+  }
   projects.splice(indexOfCurPrj, 1);
   renderProjectList();
 }

@@ -21,7 +21,12 @@
 }
 
 
-
+:root{
+    --color-with-red-background : #f7ebe8;
+    --side-bar-item-bg-color : #e9ecef;
+    --main-background-color : #e54b4b;
+    --divider-color : #e5e5e5;
+}
 * {
     margin: 0;
     padding: 0;
@@ -32,7 +37,7 @@
 body {
     display: flex;
     height: 100vh;
-    background-color: #826aed;
+    background-color: var(--main-background-color);
     overflow: auto;
 }
 
@@ -62,7 +67,7 @@ body {
 
 .side-bar a:hover {
     border-radius: 5px;
-    background-color: #e9ecef;
+    background-color: var(--side-bar-item-bg-color);
     cursor: pointer;
 
 }
@@ -70,7 +75,7 @@ body {
 .sidebar-divider {
     margin: 0 auto;
     width: 90%;
-    background-color: #e5e5e5;
+    background-color: var(--divider-color);
     height: 1px;
     border: none;
 }
@@ -86,7 +91,7 @@ body {
 .project-item {
     display: flex;
     border-radius: 5px;
-    background-color: #e9ecef;
+    background-color: var(--side-bar-item-bg-color);
     cursor: pointer;
     justify-content: space-between;
     align-items: center;
@@ -127,6 +132,10 @@ body {
     padding: 2rem;
 }
 
+.project-title{
+    color: var(--color-with-red-background);
+}
+
 .projectname-input {
     flex-grow: 8;
     padding: 0.25rem 0.5rem;
@@ -141,16 +150,26 @@ body {
 .addproject-btn {
     flex-grow: 2;
     padding: 0.25rem 0.5rem;
-    background-color: #826aed;
+    background-color: var(--main-background-color);
     border: none;
-    color: white;
+    color: var(--color-with-red-background);
     cursor: pointer;
+}
+
+.error-message{
+    padding-left:0.5rem;
+    padding-right: 0.5rem;
+    color:red;
+}
+
+.invisible{
+    visibility: hidden;
 }
 
 .todo-item {
     width: 80%;
     padding: 1.25rem 1.25rem;
-    background-color: white;
+    background-color: var(--color-with-red-background);
     border-radius: 5px;
     margin: 5px auto;
 }
