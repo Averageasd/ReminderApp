@@ -12,5 +12,5 @@
 - [x] Display project's name in main content div.
 - [x] Show error message when user does not enter project name or project name already exists.
 - [x] when the currently selected project is deleted, its name in main content div should also be deleted.
-- [ ] Display white boxes that represent the to do items in a project when user click on that project.
-- [ ] View to-do items of a project by clicking on this project.
+- [x] Display white boxes that represent the to do items in a project when user click on that project.
+- [x] View to-do items of a project by clicking on this project.

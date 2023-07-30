@@ -38,7 +38,7 @@ body {
     display: flex;
     height: 100vh;
     background-color: var(--main-background-color);
-    overflow: auto;
+    /* overflow: auto; */
 }
 
 .side-bar {
