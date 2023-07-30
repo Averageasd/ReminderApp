@@ -1,3 +1,4 @@
+import format from "date-fns/format";
 export default class ReminderItem {
   constructor(title, description, dueDate, priority) {
     this.title = title;
@@ -31,7 +32,7 @@ export default class ReminderItem {
   }
 
   getDueDate() {
-    return this.dueDate;
+    return format(this.dueDate, 'MM/dd/yyyy');
   }
 
   getPriority() {

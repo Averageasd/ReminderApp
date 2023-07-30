@@ -95,7 +95,10 @@ body {
     cursor: pointer;
     justify-content: space-between;
     align-items: center;
-    padding: 0.25rem 0.25rem;
+    /* padding: 0.25rem 0.25rem; */
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.5rem;
 }
 
 .select-project{
@@ -170,10 +173,22 @@ body {
     visibility: hidden;
 }
 
+.todo-container{
+    padding: 0.25rem 0.25rem;
+    height: 80%;
+    margin-top: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .todo-item {
-    width: 80%;
-    padding: 1.25rem 1.25rem;
+    padding: 0.5rem 0.5rem;
     background-color: var(--color-with-red-background);
     border-radius: 5px;
     margin: 5px auto;
+}
+
+.todo-due-date{
+    font-size: 0.75rem;
+    color: #495057;
 }

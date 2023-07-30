@@ -14,15 +14,15 @@ const addProjectBtn = document.querySelector(".addproject-btn");
 const projectNameErrorMsg = document.querySelector(".error-message");
 addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
-const mainConent = document.querySelector(".main-content");
 const listTitleDisplay = document.querySelector(".project-title");
+const todoContainer = document.querySelector(".todo-container");
 
 const p1 = new Project("p1");
-p1.addItem(new ReminderItem('item1', 'abcd', endOfToday(), 'high'));
-p1.addItem(new ReminderItem('item2', 'eass', endOfToday(), 'high'));
-p1.addItem(new ReminderItem('item3', 'aere', endOfToday(), 'high'));
-p1.addItem(new ReminderItem('item4', 'sdks', endOfToday(), 'high'));
-p1.addItem(new ReminderItem('item5', 'ooee', endOfToday(), 'high'));
+p1.addItem(new ReminderItem("item1", "abcd", endOfToday(), "high"));
+p1.addItem(new ReminderItem("item2", "eass", endOfToday(), "high"));
+p1.addItem(new ReminderItem("item3", "aere", endOfToday(), "high"));
+p1.addItem(new ReminderItem("item4", "sdks", endOfToday(), "high"));
+p1.addItem(new ReminderItem("item5", "ooee", endOfToday(), "high"));
 const p2 = new Project("p2");
 
 const projects = [];
@@ -106,13 +106,12 @@ function selectProject(e) {
     e.target.classList.contains("project-name-container")
   ) {
     selectedProject = e.target.parentNode;
-  }
-  else{
+  } else {
     return;
   }
 
-  prjPointer = projects[Array.from(projectList.children).indexOf(selectedProject)];
-  selectedProject.classList.add('select-project');
+  prjPointer =
+    projects[Array.from(projectList.children).indexOf(selectedProject)];
   console.log(Array.from(projectList.children).indexOf(selectedProject));
   displaySelectedProject();
 }
@@ -122,6 +121,26 @@ function displaySelectedProject() {
     return;
   }
   listTitleDisplay.innerText = prjPointer.getName();
+  renderTodoItems(prjPointer);
+}
+
+function renderTodoItems(project) {
+  todoContainer.innerHTML = "";
+  for (const todo of project.getProject()) {
+    const todoItem = createTodo(todo);
+    todoContainer.appendChild(todoItem);
+  }
+}
+
+function createTodo(todoModel) {
+  const todoDiv = createDynamicElement('div', 'todo-item');
+  const todoName = createDynamicElement('div', null);
+  const todoDueDate = createDynamicElement('div', 'todo-due-date');
+  todoName.innerText = todoModel.getTitle();
+  todoDueDate.innerText = todoModel.getDueDate();
+  todoDiv.appendChild(todoName);
+  todoDiv.appendChild(todoDueDate);
+  return todoDiv;
 }
 
 function editProjectName(e) {
