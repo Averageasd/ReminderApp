@@ -5,7 +5,9 @@ import "date-fns/endOfDay";
 import deleteImage from "./images/delete.svg";
 import editImage from "./images/edit.svg";
 
-import { endOfDay } from "date-fns";
+import endOfDay from "date-fns";
+import format from "date-fns/format";
+import endOfToday from "date-fns/endOfToday";
 
 const newProjectInput = document.querySelector(".projectname-input");
 const addProjectBtn = document.querySelector(".addproject-btn");
@@ -14,8 +16,21 @@ addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
 const mainConent = document.querySelector(".main-content");
 const listTitleDisplay = document.querySelector(".project-title");
+
+const p1 = new Project("p1");
+p1.addItem(new ReminderItem('item1', 'abcd', endOfToday(), 'high'));
+p1.addItem(new ReminderItem('item2', 'eass', endOfToday(), 'high'));
+p1.addItem(new ReminderItem('item3', 'aere', endOfToday(), 'high'));
+p1.addItem(new ReminderItem('item4', 'sdks', endOfToday(), 'high'));
+p1.addItem(new ReminderItem('item5', 'ooee', endOfToday(), 'high'));
+const p2 = new Project("p2");
+
 const projects = [];
+projects.push(p1);
+projects.push(p2);
+
 let prjPointer = projects.length === 0 ? null : projects[0];
+displaySelectedProject();
 const projectNameSet = new Set();
 
 function renderProjectList() {
@@ -64,7 +79,10 @@ function displayInvalidProjectNameMsg() {
 
 function createNewProject(projectName) {
   const projectItem = createDynamicElement("div", "project-item");
-  const projectNameContainer = createDynamicElement("div", "project-name-container");
+  const projectNameContainer = createDynamicElement(
+    "div",
+    "project-name-container"
+  );
   projectNameContainer.innerText = projectName;
   const editProjectDiv = createDynamicElement("div", "edit-project-div");
   const editSymbol = createImage(editImage, "edit-symbol");
@@ -75,11 +93,11 @@ function createNewProject(projectName) {
   editProjectDiv.appendChild(deleteSymbol);
   projectItem.appendChild(projectNameContainer);
   projectItem.appendChild(editProjectDiv);
-  projectItem.addEventListener("click", displayTodoItemsOfProjects);
+  projectItem.addEventListener("click", selectProject);
   return projectItem;
 }
 
-function displayTodoItemsOfProjects(e) {
+function selectProject(e) {
   let selectedProject = null;
   if (e.target.classList.contains("project-item")) {
     selectedProject = e.target;
@@ -89,12 +107,21 @@ function displayTodoItemsOfProjects(e) {
   ) {
     selectedProject = e.target.parentNode;
   }
+  else{
+    return;
+  }
 
-  prjPointer =
-    projects[Array.from(projectList.children).indexOf(selectedProject)];
+  prjPointer = projects[Array.from(projectList.children).indexOf(selectedProject)];
+  selectedProject.classList.add('select-project');
   console.log(Array.from(projectList.children).indexOf(selectedProject));
+  displaySelectedProject();
+}
+
+function displaySelectedProject() {
+  if (prjPointer == null) {
+    return;
+  }
   listTitleDisplay.innerText = prjPointer.getName();
-  console.log(prjPointer);
 }
 
 function editProjectName(e) {
@@ -125,8 +152,8 @@ function deleteProject(e) {
   const projectItem = e.target.parentNode.parentNode;
   const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
   const projectToBeDeleted = projects[indexOfCurPrj];
-  if (prjPointer == projectToBeDeleted){
-    listTitleDisplay.innerText = '';
+  if (prjPointer == projectToBeDeleted) {
+    listTitleDisplay.innerText = "";
   }
   projects.splice(indexOfCurPrj, 1);
   renderProjectList();
