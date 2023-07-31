@@ -4,6 +4,7 @@ import "./style.css";
 import "date-fns/endOfDay";
 import deleteImage from "./images/delete.svg";
 import editImage from "./images/edit.svg";
+import addImage from './images/add.svg';
 
 import endOfDay from "date-fns";
 import format from "date-fns/format";
@@ -16,6 +17,14 @@ addProjectBtn.addEventListener("click", addNewProject);
 const projectList = document.querySelector(".project-div");
 const listTitleDisplay = document.querySelector(".project-title");
 const todoContainer = document.querySelector(".todo-container");
+const mainContent = document.querySelector(".main-content");
+const addToDoDiv = createDynamicElement('div', 'add-todo-div');
+mainContent.appendChild(addToDoDiv);
+const addSymbol = createImage(addImage, 'add-symbol');
+const newToDoInput = createDynamicElement('input', 'new-todo-input');
+newToDoInput.placeholder = 'add new item here...';
+addToDoDiv.appendChild(addSymbol);
+addToDoDiv.appendChild(newToDoInput);
 
 const p1 = new Project("p1");
 p1.addItem(new ReminderItem("item1", "abcd", endOfToday(), "high"));
@@ -133,9 +142,9 @@ function renderTodoItems(project) {
 }
 
 function createTodo(todoModel) {
-  const todoDiv = createDynamicElement('div', 'todo-item');
-  const todoName = createDynamicElement('div', null);
-  const todoDueDate = createDynamicElement('div', 'todo-due-date');
+  const todoDiv = createDynamicElement("div", "todo-item");
+  const todoName = createDynamicElement("div", null);
+  const todoDueDate = createDynamicElement("div", "todo-due-date");
   todoName.innerText = todoModel.getTitle();
   todoDueDate.innerText = todoModel.getDueDate();
   todoDiv.appendChild(todoName);
@@ -173,8 +182,10 @@ function deleteProject(e) {
   const projectToBeDeleted = projects[indexOfCurPrj];
   if (prjPointer == projectToBeDeleted) {
     listTitleDisplay.innerText = "";
+    todoContainer.innerHTML = "";
   }
   projects.splice(indexOfCurPrj, 1);
+  mainContent.removeChild();
   renderProjectList();
 }
 
@@ -187,7 +198,7 @@ function createDynamicElement(type, cssClass) {
 function createImage(image, cssClass) {
   const img = new Image();
   img.src = image;
-  img.classList.add(cssClass);
+  if (cssClass) img.classList.add(cssClass);
   return img;
 }
 

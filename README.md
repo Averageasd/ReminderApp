@@ -14,3 +14,5 @@
 - [x] when the currently selected project is deleted, its name in main content div should also be deleted.
 - [x] Display white boxes that represent the to do items in a project when user click on that project.
 - [x] View to-do items of a project by clicking on this project.
+- [x] Add a div where user can enter name of new item.
+- [ ] after user clicks the add icon, a modal shows up asking user to optionally add due date, description and priority to the newly created item.
