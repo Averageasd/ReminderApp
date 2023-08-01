@@ -1,6 +1,6 @@
 -A single page web application built using HTML, CSS, JS and Webpack.
 
-### Objectives :
+# Objectives :
 - [x] Add new project to project list on the sidebar.
 - [x] Create functions to create html non-image elements and images.
 - [x] Edit the project name by clicking on the edit symbol.
@@ -27,7 +27,7 @@
 - [x] todo-items now have IDs.
 - [x] Allow duplicate tasks.
 
-## More feature when we add custom projects :
+# More feature when we add custom projects :
 - [ ] Create a class that manages the interactions between to-do items and projects.
 - [ ] Move all the logic about managing todo-items and projects into this class.
 - [ ] By default, the task link is selected and all to-do items are displayed.
