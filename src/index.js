@@ -19,6 +19,7 @@ const addToDoDiv = createDynamicElement("div", "add-todo-div");
 mainContent.appendChild(addToDoDiv);
 const addSymbol = createImage(addImage, "add-symbol");
 const newToDoInput = createDynamicElement("input", "new-todo-input");
+const pickDateSymbol = createImage()
 newToDoInput.placeholder = "add new item here...";
 addToDoDiv.appendChild(addSymbol);
 addToDoDiv.appendChild(newToDoInput);
@@ -57,25 +58,33 @@ function createTodo(todoModel) {
   todoAction.appendChild(todoEdit);
   todoDiv.appendChild(todoDisplayInfo);
   todoDiv.appendChild(todoAction);
-  todoDiv.addEventListener("click", removeTodoListener);
+  todoDiv.addEventListener("click", todoDivListener);
 
   return todoDiv;
 }
 
-function removeTodoListener(e) {
+function todoDivListener(e) {
   if (e.target.classList.contains("todo-delete")) {
-    let idOfSelectProject = Array.from(
-      [...e.target.parentNode.parentNode.children].find((elem) =>
-        elem.classList.contains("todo-display")
-      ).children
-    ).find((elem) => elem.classList.contains("todo-id")).innerText;
-    todoProjectSource.removeTodo(idOfSelectProject);
-    renderTodoItems();
-    e.target.parentNode.parentNode.removeEventListener(
-      "click",
-      removeTodoListener
-    );
+    deleteTodo(e);
   }
+
+  if (e.target.classList.contains('todo-edit')){
+
+  }
+}
+
+function deleteTodo(e) {
+  let idOfSelectProject = Array.from(
+    [...e.target.parentNode.parentNode.children].find((elem) =>
+      elem.classList.contains("todo-display")
+    ).children
+  ).find((elem) => elem.classList.contains("todo-id")).innerText;
+  todoProjectSource.removeTodo(idOfSelectProject);
+  renderTodoItems();
+  e.target.parentNode.parentNode.removeEventListener(
+    "click",
+    removeTodoListener
+  );
 }
 
 function addNewTodoListener(e) {

@@ -8,6 +8,7 @@ export default class TodoProjectManagement {
     this.allTask = true;
     this.tmrTask = false;
     this.importantTask = false;
+    this.selectedTask = null;
   }
 
   // Note: simplified version.
@@ -27,6 +28,14 @@ export default class TodoProjectManagement {
         return;
       }
     }
+  }
+
+  setSelectedTask(index){
+    this.selectedTask = this.allTodoList[index];
+  }
+
+  getSelectedTask(){
+    return this.selectedTask;
   }
 
   setAllTask() {
