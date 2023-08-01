@@ -33,6 +33,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Times New Roman', Times, serif;
+    font-family: 'roboto-thin';
 }
 
 body {
@@ -188,6 +189,8 @@ body {
 }
 
 .todo-item {
+    display: flex;
+    justify-content: space-between;
     padding: 0.5rem 0.5rem;
     background-color: var(--color-with-red-background);
     border-radius: 5px;
@@ -198,20 +201,38 @@ body {
     background-color: white;
 }
 
-.todo-due-date {
+.todo-due-date, .todo-id {
     font-size: 0.75rem;
     color: #495057;
 }
 
+.todo-id {
+    display: none;
+}
+
 .add-todo-div {
-    gap:4px;
+    gap: 4px;
+    margin-top: 2rem;
     display: flex;
     align-items: center;
     padding: 0.5rem;
     background-color: var(--color-with-red-background);
 }
 
-.new-todo-input{
+.todo-display{}
+
+.todo-action{
+    display: flex;
+    gap:5px;
+    align-items: center;
+}
+
+.todo-delete, .todo-edit, .todo-check{
+    width: 1rem;
+    height: 1rem;
+}
+
+.new-todo-input {
     font-size: 1.125rem;
     display: block;
     width: 100%;

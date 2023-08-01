@@ -19,6 +19,14 @@ export default class Project {
     return this.todoItems;
   }
 
+  getItemAtIndex(index) {
+    return this.todoItems[index];
+  }
+
+  setProject(project) {
+    this.project = project;
+  }
+
   setName(name) {
     this.name = name;
   }
@@ -29,5 +37,14 @@ export default class Project {
 
   getToDoCount() {
     return this.todoCount;
+  }
+
+  findTodoWithTitle(title) {
+    for (let i = 0; i < this.todoItems.length; i++) {
+      if (this.todoItems[i].getTitle() === title) {
+        return i;
+      }
+    }
+    return -1;
   }
 }

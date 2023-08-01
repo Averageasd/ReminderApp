@@ -1,10 +1,20 @@
 import format from "date-fns/format";
 export default class ReminderItem {
-  constructor(title, description, dueDate, priority) {
+  constructor(todoId, title, description, dueDate, priority) {
+    this.todoId = todoId;
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
     this.priority = priority;
+    this.project = null;
+  }
+
+  setProject(project){
+    this.project = project;
+  }
+
+  getProject() {
+    return this.project;
   }
 
   setTitle(title) {
@@ -23,6 +33,10 @@ export default class ReminderItem {
     this.priority = priority;
   }
 
+  getTodoId(){
+    return this.todoId;
+  }
+
   getTitle() {
     return this.title;
   }
@@ -32,7 +46,7 @@ export default class ReminderItem {
   }
 
   getDueDate() {
-    return format(this.dueDate, 'MM/dd/yyyy');
+    return format(this.dueDate, "MM/dd/yyyy");
   }
 
   getPriority() {
