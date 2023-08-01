@@ -22,19 +22,23 @@ export default class TodoProjectManagement {
   }
 
   removeTodo(todoId) {
-    for (let i = 0; i < this.allTodoList.length; i++) {
-      if (this.allTodoList[i].getTodoId() === todoId) {
-        this.allTodoList.splice(i, 1);
-        return;
-      }
-    }
+    this.allTodoList = this.allTodoList.filter(
+      (todoItem) => todoItem.getTodoId() !== todoId
+    );
   }
 
-  setSelectedTask(index){
+  editTask(todoId, newAttr) {
+    const taskToBeEdited = this.allTodoList.find(
+      (task) => task.getTodoId() === todoId
+    );
+    taskToBeEdited.setTitle(newAttr["newName"]);
+  }
+
+  setSelectedTask(index) {
     this.selectedTask = this.allTodoList[index];
   }
 
-  getSelectedTask(){
+  getSelectedTask() {
     return this.selectedTask;
   }
 
