@@ -10,6 +10,7 @@ import checkImage from "./images/check.svg";
 import { v4 as uuidv4 } from "uuid";
 import { getExactDate } from "./exactDateCal";
 import { getExactDateWithDateStr } from "./exactDateCal";
+import PriorityConstant from "./priorityConstant";
 
 import format from "date-fns/format";
 import endOfToday from "date-fns/endOfToday";
@@ -19,28 +20,66 @@ const todoContainer = document.querySelector(".todo-container");
 const mainContent = document.querySelector(".main-content");
 const addToDoDiv = createDynamicElement("div", "add-todo-div");
 mainContent.appendChild(addToDoDiv);
-const addSymbol = createImage(addImage, "add-symbol");
-const newToDoInput = createDynamicElement("input", "new-todo-input");
 const popUpModal = document.querySelector(".edit-task-modal");
-newToDoInput.placeholder = "add new item here...";
-const datePicker = createDynamicElement("input", "date-input");
-datePicker.type = "date";
-datePicker.valueAsDate = getExactDate(Date.now());
-addToDoDiv.appendChild(addSymbol);
-addToDoDiv.appendChild(newToDoInput);
-addToDoDiv.appendChild(datePicker);
-addToDoDiv.addEventListener("click", addNewTodoListener);
+const sideBarTop = document.querySelector(".sidebar-top");
+sideBarTop.addEventListener("click", filterLinksListener);
+createAddTaskBar(addToDoDiv);
+
 const todoProjectSource = new TodoProjectManagement();
-const tomorrowLink = document.querySelector('.plan-link');
-tomorrowLink.addEventListener('click', function(e){
-  todoProjectSource.setPlannedTask();
-  renderTodoItems();
-});
+
+function createAddTaskBar(addToDoDiv) {
+  const addSymbol = createImage(addImage, "add-symbol");
+  const newToDoInput = createDynamicElement("input", "new-todo-input");
+  newToDoInput.placeholder = "add new item here...";
+  const datePicker = createDynamicElement("input", "new-todo-date-input");
+  datePicker.type = "date";
+  datePicker.valueAsDate = getExactDate(Date.now());
+  const newTodoPriorityInput = createDynamicElement(
+    "select",
+    "new-todo-priority-input"
+  );
+
+  const noneOption = createDynamicElement("option", null);
+  noneOption.value = PriorityConstant.PRI_NONE;
+  noneOption.innerText = "None";
+
+  const highOption = createDynamicElement("option", null);
+  highOption.value = PriorityConstant.PRI_HIGH;
+  highOption.innerText = "high";
+
+  const medOption = createDynamicElement("option", null);
+  medOption.value = PriorityConstant.PRI_MED;
+  medOption.innerText = "medium";
+
+  const lowOption = createDynamicElement("option", null);
+  lowOption.value = PriorityConstant.PRI_LOW;
+  lowOption.innerText = "low";
+
+  newTodoPriorityInput.appendChild(noneOption);
+  newTodoPriorityInput.appendChild(highOption);
+  newTodoPriorityInput.appendChild(medOption);
+  newTodoPriorityInput.appendChild(lowOption);
+  addToDoDiv.appendChild(addSymbol);
+  addToDoDiv.appendChild(newToDoInput);
+  addToDoDiv.appendChild(datePicker);
+  addToDoDiv.appendChild(newTodoPriorityInput);
+  addToDoDiv.addEventListener("click", addNewTodoListener);
+}
+function filterLinksListener(e) {
+  if (e.target.classList.contains("task-link")) {
+    todoProjectSource.setAllTask();
+    renderTodoItems();
+  } else if (e.target.classList.contains("plan-link")) {
+    todoProjectSource.setPlannedTask();
+    renderTodoItems();
+  } else if (e.target.classList.contains("today-link")) {
+    todoProjectSource.setTodayTask();
+    renderTodoItems();
+  }
+}
 
 function renderTodoItems() {
-  while (todoContainer.childNodes.length > 0) {
-    todoContainer.removeChild(todoContainer.lastChild);
-  }
+  todoContainer.innerHTML = "";
   for (const todo of todoProjectSource.getCurTodoList()) {
     const todoItem = createTodo(todo);
     todoContainer.appendChild(todoItem);
@@ -89,9 +128,7 @@ function createTodo(todoModel) {
 function todoDivListener(e) {
   if (e.target.classList.contains("todo-delete")) {
     deleteTodo(e);
-  }
-
-  else if (e.target.classList.contains("todo-edit")) {
+  } else if (e.target.classList.contains("todo-edit")) {
     editTodo(e);
   }
 }
@@ -107,7 +144,6 @@ function editTodo(e) {
   let idOfTask = getIdOfSelectedTask(e);
   showModal(idOfTask);
   blurBackground();
-  console.log("id of edit task ", idOfTask);
 }
 
 function showModal(idOfSelectTask) {
@@ -133,19 +169,12 @@ function showModal(idOfSelectTask) {
 }
 
 function setDefaultModalDropdown(dropdown, priority) {
-  switch (priority) {
-    case "":
-      dropdown.selectedIndex = 3;
-      break;
-    case "high":
-      dropdown.selectedIndex = 0;
-      break;
-    case "medium":
-      dropdown.selectedIndex = 1;
-      break;
-    case "low":
-      dropdown.selectedIndex = 2;
-      break;
+  const dropdownArr = [...dropdown.children];
+  for (let i = 0; i < dropdownArr.length; i++) {
+    if (dropdownArr[i].value === priority) {
+      dropdown.selectedIndex = i;
+      return;
+    }
   }
 }
 
@@ -202,21 +231,28 @@ function getIdOfSelectedTask(e) {
 
 function addNewTodoListener(e) {
   if (e.target.classList.contains("add-symbol")) {
+    const datePicker = [...addToDoDiv.children].find((elem) =>
+      elem.classList.contains("new-todo-date-input")
+    );
+
+    const newTodoPriorityInput = [...addToDoDiv.children].find((elem) =>
+      elem.classList.contains("new-todo-priority-input")
+    );
+
+    const newToDoInput = [...addToDoDiv.children].find((elem) =>
+      elem.classList.contains("new-todo-input")
+    );
     const newTodo = new ReminderItem(
       uuidv4(),
       newToDoInput.value,
       "",
-      endOfToday(),
-      ""
+      getExactDateWithDateStr(datePicker.value),
+      newTodoPriorityInput.value
     );
-    const addBar = e.target.parentNode;
-    const dateInput = [...addBar.children].find((child) =>
-      child.classList.contains("date-input")
-    );
-    console.log(dateInput.value);
-    newTodo.setDueDate(getExactDateWithDateStr(dateInput.value));
     todoProjectSource.addTodo(newTodo);
     newToDoInput.value = "";
+    datePicker.valueAsDate = getExactDate(Date.now());
+    newTodoPriorityInput.selectedIndex = 0;
     renderTodoItems();
   }
 }
@@ -256,7 +292,6 @@ function createImage(image, cssClass) {
 //     displayInvalidProjectNameMsg();
 //     return;
 //   }
-//   projectNameSet.add(newProjectName);
 //   const project = new Project(newProjectName);
 //   projects.push(project);
 //   const projectItem = createNewProject(project.getName());
@@ -369,7 +404,7 @@ function createImage(image, cssClass) {
 //   renderProjectList();
 // }
 
-//const newProjectInput = document.querySelector(".projectname-input");
+// const newProjectInput = document.querySelector(".projectname-input");
 // const addProjectBtn = document.querySelector(".addproject-btn");
 // const projectNameErrorMsg = document.querySelector(".error-message");
 // addProjectBtn.addEventListener("click", addNewProject);

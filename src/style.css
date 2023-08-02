@@ -259,6 +259,11 @@ body {
     outline: none;
 }
 
+.new-todo-date-input, .new-todo-priority-input {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
 .edit-task-modal {
     position: fixed;
     top: 50%;

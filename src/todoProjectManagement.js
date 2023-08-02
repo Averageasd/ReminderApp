@@ -10,13 +10,10 @@ export default class TodoProjectManagement {
     this.curProject = null;
     this.allTask = true;
     this.tmrTask = false;
-    this.importantTask = false;
+    this.todayTask = false;
     this.selectedTask = null;
   }
 
-  // Note: simplified version.
-  // for now we only add new tasks to allTodoList.
-  // check if the item with the given title is in list. if it is, dont do anything. Otherwise, add to list.
   addTodo(todo) {
     if (todo.getTitle().length === 0) {
       return;
@@ -52,18 +49,18 @@ export default class TodoProjectManagement {
   setAllTask() {
     this.allTask = true;
     this.tmrTask = false;
-    this.importantTask = false;
+    this.todayTask = false;
   }
 
   setPlannedTask() {
     this.allTask = false;
-    this.importantTask = false;
+    this.todayTask = false;
     this.tmrTask = true;
   }
 
-  setImportantTask() {
+  setTodayTask() {
     this.allTask = false;
-    this.importantTask = true;
+    this.todayTask = true;
     this.tmrTask = false;
   }
 
@@ -75,6 +72,14 @@ export default class TodoProjectManagement {
           differenceInDays(todo.getDueDate(), getExactDate(Date.now())) >= 0
       );
     }
+
+    if (this.todayTask) {
+      return this.allTodoList.filter(
+        (todo) =>
+          differenceInDays(todo.getDueDate(), getExactDate(Date.now())) == 0
+      );
+    }
+
     return this.allTodoList;
   }
 }
