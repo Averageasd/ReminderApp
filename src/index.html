@@ -5,18 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
     </head>
-    <body>
+    <body class="body-container">
         <div class="side-bar">
             <div class="sidebar-top">
                 <a class="task-link">Tasks</a>
-                <a class="important-link">Important</a>
                 <a class="today-link">Today</a>
                 <a class="plan-link">Planned</a>
             </div>
             <hr class="sidebar-divider">
-            <div class="project-div">
-                
-            </div>
+            <div class="project-div"></div>
             <hr class="sidebar-divider">
             <!-- <div class="add-project-div">
                 <input class="projectname-input">
@@ -27,6 +24,32 @@
         <div class="main-content">
             <h1 class="project-title"></h1>
             <div class="todo-container"></div>
+        </div>
+        <div class="edit-task-modal modal-invisible">
+            <div>
+                <div>Name:</div>
+                <input
+                    type="text"
+                    class="name-input"
+                    pattern=".{1,}"
+                    placeholder="name here..."
+                    required
+                >
+            </div>
+            <div>
+                <div>Date:</div>
+                <input class="date-input" type="date">
+            </div>
+            <div>
+                <div>Priority:</div>
+                <select class="priority-input">
+                    <option value="high">high</option>
+                    <option value="medium">medium</option>
+                    <option value="low">low</option>
+                    <option value="">None</option>
+                </select>
+            </div>
+            <button class="accept-btn">Accept</button>
         </div>
     </body>
 </html>

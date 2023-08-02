@@ -1,5 +1,8 @@
 import { toDate } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
+import format from "date-fns/format";
+import differenceInDays from "date-fns/differenceInDays";
+import { getExactDate } from "./exactDateCal";
 
 export default class TodoProjectManagement {
   constructor() {
@@ -18,7 +21,7 @@ export default class TodoProjectManagement {
     if (todo.getTitle().length === 0) {
       return;
     }
-    this.allTodoList.push(todo);
+    this.allTodoList.unshift(todo);
   }
 
   removeTodo(todoId) {
@@ -28,10 +31,14 @@ export default class TodoProjectManagement {
   }
 
   editTask(todoId, newAttr) {
-    const taskToBeEdited = this.allTodoList.find(
-      (task) => task.getTodoId() === todoId
-    );
+    const taskToBeEdited = this.getTaskWithId(todoId);
     taskToBeEdited.setTitle(newAttr["newName"]);
+    taskToBeEdited.setDueDate(newAttr["newDate"]);
+    taskToBeEdited.setPriority(newAttr["newPriority"]);
+  }
+
+  getTaskWithId(todoId) {
+    return this.allTodoList.find((task) => task.getTodoId() === todoId);
   }
 
   setSelectedTask(index) {
@@ -48,10 +55,10 @@ export default class TodoProjectManagement {
     this.importantTask = false;
   }
 
-  setTmrTask() {
+  setPlannedTask() {
     this.allTask = false;
     this.importantTask = false;
-    this.tmr = true;
+    this.tmrTask = true;
   }
 
   setImportantTask() {
@@ -61,6 +68,13 @@ export default class TodoProjectManagement {
   }
 
   getCurTodoList() {
+    console.log(getExactDate(Date.now()));
+    if (this.tmrTask) {
+      return this.allTodoList.filter(
+        (todo) =>
+          differenceInDays(todo.getDueDate(), getExactDate(Date.now())) >= 0
+      );
+    }
     return this.allTodoList;
   }
 }

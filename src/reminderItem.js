@@ -46,10 +46,19 @@ export default class ReminderItem {
   }
 
   getDueDate() {
+    return this.dueDate;
+  }
+
+  getFormatDueDate(){
     return format(this.dueDate, "MM/dd/yyyy");
   }
 
   getPriority() {
     return this.priority;
+  }
+
+  hasPriority(){
+    console.log(this.priority.length);
+    return this.priority.length > 0;
   }
 }

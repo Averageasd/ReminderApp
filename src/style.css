@@ -201,13 +201,26 @@ body {
     background-color: white;
 }
 
-.todo-due-date, .todo-id {
+.todo-due-date, .todo-id, .todo-priority {
     font-size: 0.75rem;
     color: #495057;
 }
 
+.todo-display-bottom {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
 .todo-id {
     display: none;
+}
+
+.todo-display-bottom-separation {
+    border-radius: 50%;
+    width: 3px;
+    height: 3px;
+    background-color: #495057;
 }
 
 .add-todo-div {
@@ -219,15 +232,15 @@ body {
     background-color: var(--color-with-red-background);
 }
 
-.todo-display{}
+.todo-display {}
 
-.todo-action{
+.todo-action {
     display: flex;
-    gap:5px;
+    gap: 5px;
     align-items: center;
 }
 
-.todo-delete, .todo-edit, .todo-check{
+.todo-delete, .todo-edit, .todo-check {
     width: 1rem;
     height: 1rem;
 }
@@ -245,3 +258,33 @@ body {
 .new-todo-input:focus {
     outline: none;
 }
+
+.edit-task-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 40%;
+    padding: 1.25rem;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    z-index: 1000;
+    background-color: var(--color-with-red-background);
+}
+
+.modal-invisible {
+    visibility: hidden;
+}
+
+.blur-background {
+    z-index: -1000;
+    opacity: 0.5;
+}
+
+.date-input {
+    padding: 0.2rem;
+}
+
+/* .edit-task-modal div{
+    background-color: red;
+} */

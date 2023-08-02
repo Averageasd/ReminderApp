@@ -8,23 +8,34 @@ import editImage from "./images/edit.svg";
 import addImage from "./images/add.svg";
 import checkImage from "./images/check.svg";
 import { v4 as uuidv4 } from "uuid";
+import { getExactDate } from "./exactDateCal";
+import { getExactDateWithDateStr } from "./exactDateCal";
 
-import endOfDay from "date-fns";
 import format from "date-fns/format";
 import endOfToday from "date-fns/endOfToday";
 
+const bodyContainer = document.querySelector(".body-container");
 const todoContainer = document.querySelector(".todo-container");
 const mainContent = document.querySelector(".main-content");
 const addToDoDiv = createDynamicElement("div", "add-todo-div");
 mainContent.appendChild(addToDoDiv);
 const addSymbol = createImage(addImage, "add-symbol");
 const newToDoInput = createDynamicElement("input", "new-todo-input");
-const pickDateSymbol = createImage();
+const popUpModal = document.querySelector(".edit-task-modal");
 newToDoInput.placeholder = "add new item here...";
+const datePicker = createDynamicElement("input", "date-input");
+datePicker.type = "date";
+datePicker.valueAsDate = getExactDate(Date.now());
 addToDoDiv.appendChild(addSymbol);
 addToDoDiv.appendChild(newToDoInput);
+addToDoDiv.appendChild(datePicker);
 addToDoDiv.addEventListener("click", addNewTodoListener);
 const todoProjectSource = new TodoProjectManagement();
+const tomorrowLink = document.querySelector('.plan-link');
+tomorrowLink.addEventListener('click', function(e){
+  todoProjectSource.setPlannedTask();
+  renderTodoItems();
+});
 
 function renderTodoItems() {
   while (todoContainer.childNodes.length > 0) {
@@ -41,14 +52,27 @@ function createTodo(todoModel) {
   const todoName = createDynamicElement("div", null);
   const todoId = createDynamicElement("div", "todo-id");
   const todoDueDate = createDynamicElement("div", "todo-due-date");
+  const todoPriority = createDynamicElement("div", "todo-priority");
   todoName.innerText = todoModel.getTitle();
-  todoDueDate.innerText = `due ${todoModel.getDueDate()}`;
+  todoDueDate.innerText = todoModel.getFormatDueDate();
+  todoPriority.innerText = todoModel.getPriority();
   todoId.innerText = todoModel.getTodoId();
   const todoDisplayInfo = createDynamicElement("div", "todo-display");
   todoDisplayInfo.appendChild(todoName);
   todoDisplayInfo.appendChild(todoId);
-  todoDisplayInfo.appendChild(todoDueDate);
+  const todoInfoBottomPart = createDynamicElement("div", "todo-display-bottom");
+  const todoBottomSeparation = createDynamicElement(
+    "div",
+    "todo-display-bottom-separation"
+  );
+  todoInfoBottomPart.appendChild(todoDueDate);
 
+  if (todoModel.hasPriority()) {
+    todoInfoBottomPart.appendChild(todoBottomSeparation);
+    todoInfoBottomPart.appendChild(todoPriority);
+  }
+
+  todoDisplayInfo.appendChild(todoInfoBottomPart);
   const todoFinish = createImage(checkImage, "todo-check");
   const todoDelete = createImage(deleteImage, "todo-delete");
   const todoEdit = createImage(editImage, "todo-edit");
@@ -59,7 +83,6 @@ function createTodo(todoModel) {
   todoDiv.appendChild(todoDisplayInfo);
   todoDiv.appendChild(todoAction);
   todoDiv.addEventListener("click", todoDivListener);
-
   return todoDiv;
 }
 
@@ -68,7 +91,7 @@ function todoDivListener(e) {
     deleteTodo(e);
   }
 
-  if (e.target.classList.contains("todo-edit")) {
+  else if (e.target.classList.contains("todo-edit")) {
     editTodo(e);
   }
 }
@@ -82,9 +105,90 @@ function deleteTodo(e) {
 
 function editTodo(e) {
   let idOfTask = getIdOfSelectedTask(e);
-  todoProjectSource.editTask(idOfTask, { newName: "asd" });
-  renderTodoItems();
+  showModal(idOfTask);
+  blurBackground();
   console.log("id of edit task ", idOfTask);
+}
+
+function showModal(idOfSelectTask) {
+  popUpModal.classList.remove("modal-invisible");
+  const taskWithId = todoProjectSource.getTaskWithId(idOfSelectTask);
+  console.log(taskWithId);
+  const dateInput = popUpModal.querySelector(".date-input");
+  dateInput.valueAsDate = taskWithId.getDueDate();
+  const nameInput = popUpModal.querySelector(".name-input");
+  nameInput.value = taskWithId.getTitle();
+  const priorityInput = popUpModal.querySelector(".priority-input");
+  setDefaultModalDropdown(priorityInput, taskWithId.getPriority());
+  const confirmEditCallBack = modalListenerWrapper(
+    idOfSelectTask,
+    taskWithId.getTitle(),
+    nameInput,
+    dateInput,
+    priorityInput
+  );
+  popUpModal
+    .querySelector(".accept-btn")
+    .addEventListener("click", confirmEditCallBack);
+}
+
+function setDefaultModalDropdown(dropdown, priority) {
+  switch (priority) {
+    case "":
+      dropdown.selectedIndex = 3;
+      break;
+    case "high":
+      dropdown.selectedIndex = 0;
+      break;
+    case "medium":
+      dropdown.selectedIndex = 1;
+      break;
+    case "low":
+      dropdown.selectedIndex = 2;
+      break;
+  }
+}
+
+function modalListenerWrapper(
+  taskid,
+  initTitle,
+  nameInput,
+  dateInput,
+  priorityInput
+) {
+  const confirmEditListener = function (e) {
+    e.stopPropagation();
+    if (nameInput.value.length === 0) {
+      nameInput.value = initTitle;
+    }
+    todoProjectSource.editTask(taskid, {
+      newName: nameInput.value,
+      newDate: new Date(dateInput.value + " EDT"),
+      newPriority: priorityInput.value,
+    });
+    e.target.removeEventListener("click", confirmEditListener);
+    e.target.parentNode.classList.add("modal-invisible");
+    unblurBackground();
+    renderTodoItems();
+  };
+
+  return confirmEditListener;
+}
+
+function blurBackground() {
+  Array.from(
+    [...bodyContainer.children].filter(
+      (child) => !child.classList.contains("edit-task-modal")
+    )
+  ).map((child) => child.classList.add("blur-background"));
+}
+
+function unblurBackground() {
+  Array.from(
+    [...bodyContainer.children].filter(
+      (child) => !child.classList.contains("edit-task-modal")
+    )
+  ).map((child) => child.classList.remove("blur-background"));
 }
 
 function getIdOfSelectedTask(e) {
@@ -98,9 +202,20 @@ function getIdOfSelectedTask(e) {
 
 function addNewTodoListener(e) {
   if (e.target.classList.contains("add-symbol")) {
-    todoProjectSource.addTodo(
-      new ReminderItem(uuidv4(), newToDoInput.value, "", endOfToday(), "high")
+    const newTodo = new ReminderItem(
+      uuidv4(),
+      newToDoInput.value,
+      "",
+      endOfToday(),
+      ""
     );
+    const addBar = e.target.parentNode;
+    const dateInput = [...addBar.children].find((child) =>
+      child.classList.contains("date-input")
+    );
+    console.log(dateInput.value);
+    newTodo.setDueDate(getExactDateWithDateStr(dateInput.value));
+    todoProjectSource.addTodo(newTodo);
     newToDoInput.value = "";
     renderTodoItems();
   }

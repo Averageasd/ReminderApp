@@ -4,17 +4,19 @@
 - [x] Only work with tasks for now.
 - [x] Remove task.
 - [x] Add task.
-- [ ] when click add task symbol, a modal pops up asking user to edit the newly created item.
-- [ ] keep track of selected task.
-- [ ] Edit task.
+- [x] when modal shows up, background is blurred.
+- [x] Add options to add date for user in the add task bar.
+- [x] Display task's priority.
+- [ ] keep track of selected task. (Dont know if we need this feature)
+- [x] Edit task.
 - [x] View all tasks.
-- [ ] View tomorrow tasks.
-- [ ] View important tasks.
-- [ ] Initially, we have 1 project called tasks.
+- [ ] View planned tasks.
+- [ ] View important tasks. (Dont know if we need this feature)
 - [x] todo-items now have IDs.
 - [x] Allow duplicate tasks.
 
 ## More feature when we add custom projects :
+- [ ] Initially, we have 1 project called tasks.
 - [ ] Add new project to project list on the sidebar.
 - [ ] Create functions to create html non-image elements and images.
 - [ ] Edit the project name by clicking on the edit symbol.
