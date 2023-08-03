@@ -1,5 +1,6 @@
 export default class Project {
-  constructor(name) {
+  constructor(id, name) {
+    this.id = id;
     this.name = name;
     this.todoItems = [];
     this.todoCount = 0;
@@ -10,9 +11,15 @@ export default class Project {
     this.todoCount++;
   }
 
-  removeItem(todoIndex) {
-    this.todoItems = this.todoItems.splice(todoIndex, 1);
-    this.todoCount--;
+  removeItem(todoId) {
+    this.todoItems = this.todoItems.filter(
+      (item) => item.getTodoId() !== todoId
+    );
+    if (this.todoItems.length > 0) this.todoCount--;
+  }
+
+  getId() {
+    return this.id;
   }
 
   getProject() {

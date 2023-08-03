@@ -15,6 +15,15 @@ import PriorityConstant from "./priorityConstant";
 import format from "date-fns/format";
 import endOfToday from "date-fns/endOfToday";
 
+// GUI for adding projects
+const newProjectInput = document.querySelector(".projectname-input");
+const addProjectBtn = document.querySelector(".addproject-btn");
+const projectNameErrorMsg = document.querySelector(".error-message");
+addProjectBtn.addEventListener("click", addNewProject);
+const projectList = document.querySelector(".project-div");
+const listTitleDisplay = document.querySelector(".project-title");
+
+// GUI for adding container
 const bodyContainer = document.querySelector(".body-container");
 const todoContainer = document.querySelector(".todo-container");
 const mainContent = document.querySelector(".main-content");
@@ -26,6 +35,8 @@ sideBarTop.addEventListener("click", filterLinksListener);
 createAddTaskBar(addToDoDiv);
 
 const todoProjectSource = new TodoProjectManagement();
+
+renderTodoItems();
 
 function createAddTaskBar(addToDoDiv) {
   const addSymbol = createImage(addImage, "add-symbol");
@@ -286,19 +297,16 @@ function createImage(image, cssClass) {
  *
  * Dont touch these adding projects functions.
  */
-// function addNewProject(e) {
-//   let newProjectName = newProjectInput.value;
-//   if (!projectNameChecker(newProjectName)) {
-//     displayInvalidProjectNameMsg();
-//     return;
-//   }
-//   const project = new Project(newProjectName);
-//   projects.push(project);
-//   const projectItem = createNewProject(project.getName());
-//   projectList.appendChild(projectItem);
-//   hideErrorMessage();
-//   clearProjectNameInput();
-// }
+function addNewProject(e) {
+  let newProjectName = newProjectInput.value;
+  const project = new Project(uuidv4(), newProjectName);
+  console.log(project);
+  const projectItem = createNewProjectItem(project);
+  projectList.appendChild(projectItem);
+  todoProjectSource.addProject(project);
+  // hideErrorMessage();
+  // clearProjectNameInput();
+}
 
 // function hideErrorMessage() {
 //   projectNameErrorMsg.innerText = "";
@@ -321,44 +329,47 @@ function createImage(image, cssClass) {
 //   projectNameErrorMsg.classList.remove("invisible");
 // }
 
-// function createNewProject(projectName) {
-//   const projectItem = createDynamicElement("div", "project-item");
-//   const projectNameContainer = createDynamicElement(
-//     "div",
-//     "project-name-container"
-//   );
-//   projectNameContainer.innerText = projectName;
-//   const editProjectDiv = createDynamicElement("div", "edit-project-div");
-//   const editSymbol = createImage(editImage, "edit-symbol");
-//   editSymbol.addEventListener("click", editProjectName);
-//   editProjectDiv.appendChild(editSymbol);
-//   const deleteSymbol = createImage(deleteImage, "delete-symbol");
-//   deleteSymbol.addEventListener("click", deleteProject);
-//   editProjectDiv.appendChild(deleteSymbol);
-//   projectItem.appendChild(projectNameContainer);
-//   projectItem.appendChild(editProjectDiv);
-//   projectItem.addEventListener("click", selectProject);
-//   return projectItem;
-// }
+function createNewProjectItem(project) {
+  const projectItem = createDynamicElement("div", "project-item");
+  const projectNameContainer = createDynamicElement(
+    "div",
+    "project-name-container"
+  );
+  projectNameContainer.innerText = project.getName();
+  const projectIdContainer = createDynamicElement("div", "project-id");
+  projectIdContainer.innerText = project.getId();
+  const editProjectDiv = createDynamicElement("div", "edit-project-div");
+  const editSymbol = createImage(editImage, "edit-symbol");
+  // editSymbol.addEventListener("click", editProjectName);
+  editProjectDiv.appendChild(editSymbol);
+  const deleteSymbol = createImage(deleteImage, "delete-symbol");
+  // deleteSymbol.addEventListener("click", deleteProject);
+  const projectInfo = createDynamicElement("div", "project-info-display");
+  projectInfo.appendChild(projectNameContainer);
+  projectInfo.appendChild(projectIdContainer);
+  editProjectDiv.appendChild(deleteSymbol);
+  projectItem.appendChild(projectInfo);
+  projectItem.appendChild(editProjectDiv);
+  const projectItemListenerCallBack = projectItemListenerWrapper(projectItem);
+  projectItem.addEventListener("click", projectItemListenerCallBack);
+  return projectItem;
+}
 
-// function selectProject(e) {
-//   let selectedProject = null;
-//   if (e.target.classList.contains("project-item")) {
-//     selectedProject = e.target;
-//   } else if (
-//     e.target.classList.contains("edit-project-div") ||
-//     e.target.classList.contains("project-name-container")
-//   ) {
-//     selectedProject = e.target.parentNode;
-//   } else {
-//     return;
-//   }
-
-//   prjPointer =
-//     projects[Array.from(projectList.children).indexOf(selectedProject)];
-//   console.log(Array.from(projectList.children).indexOf(selectedProject));
-//   displaySelectedProject();
-// }
+function projectItemListenerWrapper(projectItem) {
+  const itemListener = function (e) {
+    if (
+      !e.target.classList.contains("delete-symbol") &&
+      !e.target.classList.contains("edit-symbol")
+    ) {
+      todoProjectSource.setSelectedProject(
+        projectItem.querySelector(".project-id").innerText
+      );
+      renderTodoItems();
+      console.log(todoProjectSource.getSelectedProject());
+    }
+  };
+  return itemListener;
+}
 
 // function displaySelectedProject() {
 //   if (prjPointer == null) {
@@ -403,10 +414,3 @@ function createImage(image, cssClass) {
 //   projects.splice(indexOfCurPrj, 1);
 //   renderProjectList();
 // }
-
-// const newProjectInput = document.querySelector(".projectname-input");
-// const addProjectBtn = document.querySelector(".addproject-btn");
-// const projectNameErrorMsg = document.querySelector(".error-message");
-// addProjectBtn.addEventListener("click", addNewProject);
-// const projectList = document.querySelector(".project-div");
-// const listTitleDisplay = document.querySelector(".project-title");

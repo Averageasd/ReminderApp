@@ -7,11 +7,18 @@ import { getExactDate } from "./exactDateCal";
 export default class TodoProjectManagement {
   constructor() {
     this.allTodoList = [];
+    this.projectList = [];
     this.curProject = null;
     this.allTask = true;
     this.tmrTask = false;
     this.todayTask = false;
-    this.selectedTask = null;
+  }
+
+  addProject(project) {
+    if (project.getName().length === 0) {
+      return;
+    }
+    this.projectList.unshift(project);
   }
 
   addTodo(todo) {
@@ -19,12 +26,14 @@ export default class TodoProjectManagement {
       return;
     }
     this.allTodoList.unshift(todo);
+    if (this.curProject) this.curProject.addItem(todo);
   }
 
   removeTodo(todoId) {
     this.allTodoList = this.allTodoList.filter(
       (todoItem) => todoItem.getTodoId() !== todoId
     );
+    if (this.curProject) this.curProject.removeItem(todoId);
   }
 
   editTask(todoId, newAttr) {
@@ -38,30 +47,36 @@ export default class TodoProjectManagement {
     return this.allTodoList.find((task) => task.getTodoId() === todoId);
   }
 
-  setSelectedTask(index) {
-    this.selectedTask = this.allTodoList[index];
+  setSelectedProject(projectId) {
+    this.curProject = this.projectList.find((prj) => prj.getId() === projectId);
+    this.allTask = false;
+    this.tmrTask = false;
+    this.todayTask = false;
   }
 
-  getSelectedTask() {
-    return this.selectedTask;
+  getSelectedProject() {
+    return this.curProject;
   }
 
   setAllTask() {
     this.allTask = true;
     this.tmrTask = false;
     this.todayTask = false;
+    this.curProject = null;
   }
 
   setPlannedTask() {
     this.allTask = false;
     this.todayTask = false;
     this.tmrTask = true;
+    this.curProject = null;
   }
 
   setTodayTask() {
     this.allTask = false;
     this.todayTask = true;
     this.tmrTask = false;
+    this.curProject = null;
   }
 
   getCurTodoList() {
@@ -78,6 +93,10 @@ export default class TodoProjectManagement {
         (todo) =>
           differenceInDays(todo.getDueDate(), getExactDate(Date.now())) == 0
       );
+    }
+
+    if (this.curProject) {
+      return this.curProject.getProject();
     }
 
     return this.allTodoList;
