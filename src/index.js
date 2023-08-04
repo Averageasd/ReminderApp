@@ -7,13 +7,11 @@ import deleteImage from "./images/delete.svg";
 import editImage from "./images/edit.svg";
 import addImage from "./images/add.svg";
 import checkImage from "./images/check.svg";
+import projectImage from "./images/project.svg";
 import { v4 as uuidv4 } from "uuid";
 import { getExactDate } from "./exactDateCal";
 import { getExactDateWithDateStr } from "./exactDateCal";
 import PriorityConstant from "./priorityConstant";
-
-import format from "date-fns/format";
-import endOfToday from "date-fns/endOfToday";
 
 // GUI for adding projects
 const newProjectInput = document.querySelector(".projectname-input");
@@ -36,8 +34,6 @@ createAddTaskBar(addToDoDiv);
 
 const todoProjectSource = new TodoProjectManagement();
 
-renderTodoItems();
-
 function createAddTaskBar(addToDoDiv) {
   const addSymbol = createImage(addImage, "add-symbol");
   const newToDoInput = createDynamicElement("input", "new-todo-input");
@@ -56,15 +52,15 @@ function createAddTaskBar(addToDoDiv) {
 
   const highOption = createDynamicElement("option", null);
   highOption.value = PriorityConstant.PRI_HIGH;
-  highOption.innerText = "high";
+  highOption.innerText = PriorityConstant.PRI_HIGH;
 
   const medOption = createDynamicElement("option", null);
   medOption.value = PriorityConstant.PRI_MED;
-  medOption.innerText = "medium";
+  medOption.innerText = PriorityConstant.PRI_MED;
 
   const lowOption = createDynamicElement("option", null);
   lowOption.value = PriorityConstant.PRI_LOW;
-  lowOption.innerText = "low";
+  lowOption.innerText = PriorityConstant.PRI_LOW;
 
   newTodoPriorityInput.appendChild(noneOption);
   newTodoPriorityInput.appendChild(highOption);
@@ -76,21 +72,27 @@ function createAddTaskBar(addToDoDiv) {
   addToDoDiv.appendChild(newTodoPriorityInput);
   addToDoDiv.addEventListener("click", addNewTodoListener);
 }
+
 function filterLinksListener(e) {
   if (e.target.classList.contains("task-link")) {
     todoProjectSource.setAllTask();
     renderTodoItems();
   } else if (e.target.classList.contains("plan-link")) {
     todoProjectSource.setPlannedTask();
+    listTitleDisplay.innerText = "Planned";
     renderTodoItems();
   } else if (e.target.classList.contains("today-link")) {
     todoProjectSource.setTodayTask();
+    listTitleDisplay.innerText = "Today";
     renderTodoItems();
   }
+  renderProjectList();
+  listTitleDisplay.innerText = todoProjectSource.getCurTodoListName();
 }
 
 function renderTodoItems() {
   todoContainer.innerHTML = "";
+  listTitleDisplay.innerText = todoProjectSource.getCurTodoListName();
   for (const todo of todoProjectSource.getCurTodoList()) {
     const todoItem = createTodo(todo);
     todoContainer.appendChild(todoItem);
@@ -103,6 +105,7 @@ function createTodo(todoModel) {
   const todoId = createDynamicElement("div", "todo-id");
   const todoDueDate = createDynamicElement("div", "todo-due-date");
   const todoPriority = createDynamicElement("div", "todo-priority");
+  const todoProject = createDynamicElement("div", "todo-project");
   todoName.innerText = todoModel.getTitle();
   todoDueDate.innerText = todoModel.getFormatDueDate();
   todoPriority.innerText = todoModel.getPriority();
@@ -120,6 +123,12 @@ function createTodo(todoModel) {
   if (todoModel.hasPriority()) {
     todoInfoBottomPart.appendChild(todoBottomSeparation);
     todoInfoBottomPart.appendChild(todoPriority);
+  }
+
+  if (todoModel.hasProject()) {
+    todoProject.innerText = todoModel.getProject().getName();
+    todoInfoBottomPart.appendChild(todoBottomSeparation);
+    todoInfoBottomPart.appendChild(todoProject);
   }
 
   todoDisplayInfo.appendChild(todoInfoBottomPart);
@@ -167,9 +176,14 @@ function showModal(idOfSelectTask) {
   nameInput.value = taskWithId.getTitle();
   const priorityInput = popUpModal.querySelector(".priority-input");
   setDefaultModalDropdown(priorityInput, taskWithId.getPriority());
+  const projectSelectInput = popUpModal.querySelector(".project-input");
+  projectSelectInput.innerHTML = "";
+  addAllProjectsToSelect(taskWithId, projectSelectInput);
+
   const confirmEditCallBack = modalListenerWrapper(
     idOfSelectTask,
     taskWithId.getTitle(),
+    projectSelectInput,
     nameInput,
     dateInput,
     priorityInput
@@ -177,6 +191,28 @@ function showModal(idOfSelectTask) {
   popUpModal
     .querySelector(".accept-btn")
     .addEventListener("click", confirmEditCallBack);
+}
+
+function addAllProjectsToSelect(taskWithId, projectSelectInput) {
+  const noneOption = createDynamicElement("option", "null");
+  noneOption.innerText = "None";
+  noneOption.value = "";
+  projectSelectInput.appendChild(noneOption);
+  const allProjects = todoProjectSource.getAllProjects();
+  for (let i = 0; i < allProjects.length; i++) {
+    const project = allProjects[i];
+    const projectOption = createDynamicElement("option", null);
+    projectOption.innerText = `${project.getName()} (id:${project.getId()})`;
+    projectOption.value = project.getId();
+
+    projectSelectInput.appendChild(projectOption);
+    if (
+      taskWithId.getProject() &&
+      taskWithId.getProject().getId() === project.getId()
+    ) {
+      projectSelectInput.selectedIndex = i + 1;
+    }
+  }
 }
 
 function setDefaultModalDropdown(dropdown, priority) {
@@ -192,6 +228,7 @@ function setDefaultModalDropdown(dropdown, priority) {
 function modalListenerWrapper(
   taskid,
   initTitle,
+  projectSelectInput,
   nameInput,
   dateInput,
   priorityInput
@@ -203,8 +240,9 @@ function modalListenerWrapper(
     }
     todoProjectSource.editTask(taskid, {
       newName: nameInput.value,
-      newDate: new Date(dateInput.value + " EDT"),
+      newDate: new Date(getExactDateWithDateStr(dateInput.value)),
       newPriority: priorityInput.value,
+      projectId: projectSelectInput.value,
     });
     e.target.removeEventListener("click", confirmEditListener);
     e.target.parentNode.classList.add("modal-invisible");
@@ -281,53 +319,66 @@ function createImage(image, cssClass) {
   return img;
 }
 
-// renderProjectList();
-// displaySelectedProject();
-// const projectNameSet = new Set();
-
-// function renderProjectList() {
-//   projectList.innerHTML = "";
-//   for (const project of projects) {
-//     const projectItem = createNewProject(project.getName());
-//     projectList.appendChild(projectItem);
-//   }
-// }
-
-/**
- *
- * Dont touch these adding projects functions.
- */
-function addNewProject(e) {
-  let newProjectName = newProjectInput.value;
-  const project = new Project(uuidv4(), newProjectName);
-  console.log(project);
-  const projectItem = createNewProjectItem(project);
-  projectList.appendChild(projectItem);
-  todoProjectSource.addProject(project);
-  // hideErrorMessage();
-  // clearProjectNameInput();
+function renderProjectList() {
+  renderDefaultList();
+  projectList.innerHTML = "";
+  for (const project of todoProjectSource.projectList) {
+    const projectItem = createNewProjectItem(project);
+    if (
+      todoProjectSource.curProject &&
+      project.getId() === todoProjectSource.getSelectedProject().getId()
+    ) {
+      projectItem.classList.add("selected");
+    } else {
+      projectItem.classList.remove("selected");
+    }
+    projectList.appendChild(projectItem);
+  }
 }
 
-// function hideErrorMessage() {
-//   projectNameErrorMsg.innerText = "";
-//   projectNameErrorMsg.classList.add("invisible");
-// }
+function renderDefaultList() {
+  if (todoProjectSource.allTask) {
+    sideBarTop.querySelector(".task-link").classList.add("selected");
+    sideBarTop.querySelector(".plan-link").classList.remove("selected");
+    sideBarTop.querySelector(".today-link").classList.remove("selected");
+  } else if (todoProjectSource.tmrTask) {
+    sideBarTop.querySelector(".task-link").classList.remove("selected");
+    sideBarTop.querySelector(".plan-link").classList.add("selected");
+    sideBarTop.querySelector(".today-link").classList.remove("selected");
+  } else if (todoProjectSource.todayTask) {
+    sideBarTop.querySelector(".task-link").classList.remove("selected");
+    sideBarTop.querySelector(".plan-link").classList.remove("selected");
+    sideBarTop.querySelector(".today-link").classList.add("selected");
+  } else if (todoProjectSource.curProject) {
+    sideBarTop.querySelector(".task-link").classList.remove("selected");
+    sideBarTop.querySelector(".plan-link").classList.remove("selected");
+    sideBarTop.querySelector(".today-link").classList.remove("selected");
+  }
+}
 
-// function clearProjectNameInput() {
-//   newProjectInput.value = "";
-// }
+function addNewProject() {
+  let newProjectName = newProjectInput.value;
+  if (newProjectName.length === 0) {
+    projectNameErrorMsg.classList.remove("invisible");
+    projectNameErrorMsg.innerText = "Project name cannot be empty!!!";
+    return;
+  }
+  const project = new Project(uuidv4(), newProjectName);
+  console.log(project);
+  todoProjectSource.addProject(project);
+  renderProjectList();
+  hideErrorMessage();
+  clearProjectNameInput();
+}
 
-// function projectNameChecker(projectName) {
-//   if (projectName.length === 0 || projectNameSet.has(projectName)) {
-//     return false;
-//   }
-//   return true;
-// }
+function hideErrorMessage() {
+  projectNameErrorMsg.innerText = "";
+  projectNameErrorMsg.classList.add("invisible");
+}
 
-// function displayInvalidProjectNameMsg() {
-//   projectNameErrorMsg.innerText = "project name is empty or already exists!!!";
-//   projectNameErrorMsg.classList.remove("invisible");
-// }
+function clearProjectNameInput() {
+  newProjectInput.value = "";
+}
 
 function createNewProjectItem(project) {
   const projectItem = createDynamicElement("div", "project-item");
@@ -335,15 +386,15 @@ function createNewProjectItem(project) {
     "div",
     "project-name-container"
   );
+  const projectSymbol = createImage(projectImage, "project-symbol");
+  projectItem.appendChild(projectSymbol);
   projectNameContainer.innerText = project.getName();
   const projectIdContainer = createDynamicElement("div", "project-id");
   projectIdContainer.innerText = project.getId();
   const editProjectDiv = createDynamicElement("div", "edit-project-div");
   const editSymbol = createImage(editImage, "edit-symbol");
-  // editSymbol.addEventListener("click", editProjectName);
   editProjectDiv.appendChild(editSymbol);
   const deleteSymbol = createImage(deleteImage, "delete-symbol");
-  // deleteSymbol.addEventListener("click", deleteProject);
   const projectInfo = createDynamicElement("div", "project-info-display");
   projectInfo.appendChild(projectNameContainer);
   projectInfo.appendChild(projectIdContainer);
@@ -365,52 +416,48 @@ function projectItemListenerWrapper(projectItem) {
         projectItem.querySelector(".project-id").innerText
       );
       renderTodoItems();
-      console.log(todoProjectSource.getSelectedProject());
+      renderProjectList();
+    } else if (e.target.classList.contains("delete-symbol")) {
+      deleteProject(projectItem);
+    } else if (e.target.classList.contains("edit-symbol")) {
+      editProjectName(projectItem);
     }
   };
+
   return itemListener;
 }
 
-// function displaySelectedProject() {
-//   if (prjPointer == null) {
-//     return;
-//   }
-//   listTitleDisplay.innerText = prjPointer.getName();
-//   renderTodoItems(prjPointer);
-// }
+function editProjectName(projecItem) {
+  const projectNameContainer = projecItem.querySelector(
+    ".project-name-container"
+  );
+  console.log(projectNameContainer.innerText);
+  const editProjectId = projecItem.querySelector(".project-id").innerText;
+  const curProjectName = projectNameContainer.innerText;
+  const editProjectNameInput = createDynamicElement("input", null);
+  projectNameContainer.innerHTML = "";
+  projectNameContainer.appendChild(editProjectNameInput);
+  editProjectNameInput.focus();
+  editProjectNameInput.addEventListener("blur", function () {
+    projectNameContainer.innerText =
+      editProjectNameInput.value.length === 0
+        ? curProjectName
+        : editProjectNameInput.value;
+    todoProjectSource.editProject(
+      editProjectId,
+      projectNameContainer.innerText
+    );
+    renderProjectList();
+    renderTodoItems();
+  });
+}
 
-// function editProjectName(e) {
-//   e.stopPropagation();
-//   const projectItem = e.target.parentNode.parentNode;
-//   const projectNameContainer = Array.from(projectItem.children).find((node) =>
-//     node.classList.contains("project-name-container")
-//   );
-//   const indexOfCurProject = Array.from(projectList.children).indexOf(
-//     projectItem
-//   );
-//   const curProjectName = projectNameContainer.innerText;
-//   const editProjectNameInput = createDynamicElement("input", null);
-//   projectNameContainer.innerHTML = "";
-//   projectNameContainer.appendChild(editProjectNameInput);
-//   editProjectNameInput.focus();
-//   editProjectNameInput.addEventListener("blur", function () {
-//     projectNameContainer.innerText =
-//       editProjectNameInput.value.length === 0
-//         ? curProjectName
-//         : editProjectNameInput.value;
-//     projects[indexOfCurProject].setName(projectNameContainer.innerText);
-//   });
-// }
+function deleteProject(projectItem) {
+  const deleteProjectId = projectItem.querySelector(".project-id").innerText;
+  todoProjectSource.deleteProject(deleteProjectId);
+  renderTodoItems();
+  renderProjectList();
+}
 
-// function deleteProject(e) {
-//   e.stopPropagation();
-//   const projectItem = e.target.parentNode.parentNode;
-//   const indexOfCurPrj = Array.from(projectList.children).indexOf(projectItem);
-//   const projectToBeDeleted = projects[indexOfCurPrj];
-//   if (prjPointer == projectToBeDeleted) {
-//     listTitleDisplay.innerText = "";
-//     todoContainer.innerHTML = "";
-//   }
-//   projects.splice(indexOfCurPrj, 1);
-//   renderProjectList();
-// }
+renderTodoItems();
+renderProjectList();

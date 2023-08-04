@@ -61,4 +61,8 @@ export default class ReminderItem {
     console.log(this.priority.length);
     return this.priority.length > 0;
   }
+
+  hasProject(){
+    return this.project !== null;
+  }
 }

@@ -8,7 +8,7 @@
     <body class="body-container">
         <div class="side-bar">
             <div class="sidebar-top">
-                <a class="task-link">Tasks</a>
+                <a class="task-link selected">Tasks</a>
                 <a class="today-link">Today</a>
                 <a class="plan-link">Planned</a>
             </div>
@@ -22,7 +22,9 @@
             <div class="error-message invisible"></div>
         </div>
         <div class="main-content">
-            <h1 class="project-title"></h1>
+            <h1 class="project-title">
+                Tasks
+            </h1>
             <div class="todo-container"></div>
         </div>
         <div class="edit-task-modal modal-invisible">
@@ -42,6 +44,10 @@
                     <option value="low">low</option>
                     <option value="">None</option>
                 </select>
+            </div>
+            <div>
+                <div>Choose Project:</div>
+                <select class="project-input"></select>
             </div>
             <button class="accept-btn">Accept</button>
         </div>

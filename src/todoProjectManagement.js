@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import { getExactDate } from "./exactDateCal";
+import DefaultProjectNames from "./DefaultProjectNames";
 
 export default class TodoProjectManagement {
   constructor() {
@@ -21,19 +22,47 @@ export default class TodoProjectManagement {
     this.projectList.unshift(project);
   }
 
+  deleteProject(projectId) {
+    const projectToBeDeleted = this.projectList.find(
+      (prj) => prj.getId() === projectId
+    );
+
+    if (projectToBeDeleted === this.getSelectedProject()){
+      this.setAllTask();
+    }
+    this.projectList = this.projectList.filter(
+      (prj) => prj.getId() !== projectId
+    );
+    this.allTodoList = this.allTodoList.filter(
+      (todo) =>
+        todo.getProject() === null || todo.getProject() !== projectToBeDeleted
+    );
+  }
+
+  editProject(projectId, projectName) {
+    const projectToBeEdited = this.projectList.find(
+      (prj) => prj.getId() === projectId
+    );
+    projectToBeEdited.setName(projectName);
+  }
+
   addTodo(todo) {
     if (todo.getTitle().length === 0) {
       return;
     }
     this.allTodoList.unshift(todo);
-    if (this.curProject) this.curProject.addItem(todo);
+    if (this.curProject) {
+      this.curProject.addItem(todo);
+      todo.setProject(this.curProject);
+    }
   }
 
   removeTodo(todoId) {
     this.allTodoList = this.allTodoList.filter(
       (todoItem) => todoItem.getTodoId() !== todoId
     );
-    if (this.curProject) this.curProject.removeItem(todoId);
+
+    this.projectList.forEach((proj) => proj.removeItem(todoId));
   }
 
   editTask(todoId, newAttr) {
@@ -41,10 +70,25 @@ export default class TodoProjectManagement {
     taskToBeEdited.setTitle(newAttr["newName"]);
     taskToBeEdited.setDueDate(newAttr["newDate"]);
     taskToBeEdited.setPriority(newAttr["newPriority"]);
+    const newProjectId = newAttr["projectId"];
+    const projectOfTask = taskToBeEdited.getProject();
+    if (projectOfTask){
+      projectOfTask.removeItem(todoId);
+      taskToBeEdited.setProject(null);
+    }
+    if (newProjectId){
+      const newProject = this.getProjectWithId(newProjectId);
+      newProject.addItem(taskToBeEdited);
+      taskToBeEdited.setProject(newProject);
+    }
   }
 
   getTaskWithId(todoId) {
     return this.allTodoList.find((task) => task.getTodoId() === todoId);
+  }
+
+  getProjectWithId(projectId){
+    return this.projectList.find((prj) => prj.getId() === projectId);
   }
 
   setSelectedProject(projectId) {
@@ -80,7 +124,6 @@ export default class TodoProjectManagement {
   }
 
   getCurTodoList() {
-    console.log(getExactDate(Date.now()));
     if (this.tmrTask) {
       return this.allTodoList.filter(
         (todo) =>
@@ -100,5 +143,25 @@ export default class TodoProjectManagement {
     }
 
     return this.allTodoList;
+  }
+
+  getAllProjects(){
+    return this.projectList;
+  }
+
+  getCurTodoListName(){
+    if (this.allTask){
+      return DefaultProjectNames.ALL_TASK;
+    }
+    if (this.tmrTask){
+      return DefaultProjectNames.PLANNED_TASK;
+    }
+    if (this.curProject){
+      return this.curProject.getName();
+    }
+    if (this.todayTask){
+      return DefaultProjectNames.TODAY_TASK;
+    }
+    return '';
   }
 }

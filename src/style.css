@@ -40,7 +40,6 @@ body {
     display: flex;
     height: 100vh;
     background-color: var(--main-background-color);
-    /* overflow: auto; */
 }
 
 .side-bar {
@@ -90,34 +89,38 @@ body {
     overflow-x: hidden;
 }
 
-.project-info-display{
+.project-info-display {
     flex-grow: 1;
     display: flex;
+    /* align-items: center; */
+    /* background-color: red; */
+    padding-left: 0.25rem;
     flex-direction: column;
 }
 
 .project-item {
     display: flex;
     border-radius: 5px;
-    background-color: var(--side-bar-item-bg-color);
+    /* background-color: var(--side-bar-item-bg-color); */
     cursor: pointer;
     justify-content: space-between;
-    align-items: center;
-    /* padding: 0.25rem 0.25rem; */
+    align-items: start;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     padding-left: 0.5rem;
 }
 
-.select-project {
-    background-color: red;
+.project-item:hover {
+    border-radius: 5px;
+    background-color: var(--side-bar-item-bg-color);
+    cursor: pointer;
 }
 
 .project-name-container {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 50%;
+    width: 6rem;
 }
 
 .edit-project-div {
@@ -134,6 +137,11 @@ body {
 .edit-symbol, .delete-symbol {
     width: 1rem;
     height: 1rem;
+}
+
+.project-symbol {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .add-symbol {
@@ -207,7 +215,7 @@ body {
     background-color: white;
 }
 
-.todo-due-date, .todo-id, .todo-priority, .project-id {
+.todo-due-date, .todo-id, .todo-priority, .project-id, .todo-project {
     font-size: 0.75rem;
     color: #495057;
 }
@@ -294,6 +302,22 @@ body {
 
 .date-input {
     padding: 0.2rem;
+}
+
+.project-option {
+    /* display: flex;
+    overflow: hidden; */
+}
+
+.project-input {
+    display: block;
+    width: 100%;
+}
+
+.selected {
+    border-radius: 5px;
+    background-color: var(--side-bar-item-bg-color);
+    cursor: pointer;
 }
 
 /* .edit-task-modal div{
