@@ -41,4 +41,7 @@
 - [ ] make this code more modular. (maybe latter)
 
 ## Features when we add local storage :
-- [ ] Implement a storage system.
+- [x] Create a local storage.
+- [x] Implement add operation. if task belongs to a project, in the local storage, it will have reference to the project ID.
+- [x] initially, we have a key called "tasks" in localStorage. 
+- [ ] initially, we have a key called "projects" in localStorage.

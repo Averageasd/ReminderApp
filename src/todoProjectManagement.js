@@ -4,6 +4,7 @@ import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import { getExactDate } from "./exactDateCal";
 import DefaultProjectNames from "./DefaultProjectNames";
+import Storage from "./storage";
 
 export default class TodoProjectManagement {
   constructor() {
@@ -13,6 +14,7 @@ export default class TodoProjectManagement {
     this.allTask = true;
     this.tmrTask = false;
     this.todayTask = false;
+    this.storage = new Storage();
   }
 
   addProject(project) {
@@ -55,6 +57,7 @@ export default class TodoProjectManagement {
       this.curProject.addItem(todo);
       todo.setProject(this.curProject);
     }
+    this.storage.addTask(todo);
   }
 
   removeTodo(todoId) {
