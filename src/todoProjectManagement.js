@@ -2,9 +2,11 @@ import { toDate } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
-import { getExactDate } from "./exactDateCal";
+import { getExactDate, getExactDateWithDateStr } from "./exactDateCal";
 import DefaultProjectNames from "./DefaultProjectNames";
 import Storage from "./storage";
+import Project from "./project";
+import ReminderItem from "./reminderItem";
 
 export default class TodoProjectManagement {
   constructor() {
@@ -15,6 +17,37 @@ export default class TodoProjectManagement {
     this.tmrTask = false;
     this.todayTask = false;
     this.storage = new Storage();
+    this.initData();
+  }
+
+  initData() {
+    const projectsFromStorage = this.storage.getStoredProjects();
+    const tasksFromStorage = this.storage.getStoredTasks();
+    for (const idKey in projectsFromStorage) {
+      const storageProject = projectsFromStorage[idKey];
+      const project = new Project(storageProject.id, storageProject.name);
+      this.projectList.unshift(project);
+    }
+
+    for (const idKey in tasksFromStorage) {
+      const storageTask = tasksFromStorage[idKey];
+      console.log(storageTask);
+      const task = new ReminderItem(
+        storageTask.todoId,
+        storageTask.title,
+        storageTask.description,
+        getExactDateWithDateStr(storageTask.dueDate),
+        storageTask.priority
+      );
+      if (storageTask["projectId"]) {
+        const projectCurTask = this.projectList.find(
+          (project) => project.getId() === storageTask["projectId"]
+        );
+        task.setProject(projectCurTask);
+        projectCurTask.addItem(task);
+      }
+      this.allTodoList.unshift(task);
+    }
   }
 
   addProject(project) {
@@ -22,6 +55,7 @@ export default class TodoProjectManagement {
       return;
     }
     this.projectList.unshift(project);
+    this.storage.addProject(project);
   }
 
   deleteProject(projectId) {
@@ -29,7 +63,7 @@ export default class TodoProjectManagement {
       (prj) => prj.getId() === projectId
     );
 
-    if (projectToBeDeleted === this.getSelectedProject()){
+    if (projectToBeDeleted === this.getSelectedProject()) {
       this.setAllTask();
     }
     this.projectList = this.projectList.filter(
@@ -39,6 +73,7 @@ export default class TodoProjectManagement {
       (todo) =>
         todo.getProject() === null || todo.getProject() !== projectToBeDeleted
     );
+    this.storage.removeProject(projectId);
   }
 
   editProject(projectId, projectName) {
@@ -46,6 +81,7 @@ export default class TodoProjectManagement {
       (prj) => prj.getId() === projectId
     );
     projectToBeEdited.setName(projectName);
+    this.storage.editProject(projectToBeEdited);
   }
 
   addTodo(todo) {
@@ -66,6 +102,7 @@ export default class TodoProjectManagement {
     );
 
     this.projectList.forEach((proj) => proj.removeItem(todoId));
+    this.storage.deleteTask(todoId);
   }
 
   editTask(todoId, newAttr) {
@@ -75,22 +112,24 @@ export default class TodoProjectManagement {
     taskToBeEdited.setPriority(newAttr["newPriority"]);
     const newProjectId = newAttr["projectId"];
     const projectOfTask = taskToBeEdited.getProject();
-    if (projectOfTask){
+    if (projectOfTask) {
       projectOfTask.removeItem(todoId);
       taskToBeEdited.setProject(null);
     }
-    if (newProjectId){
+    if (newProjectId) {
       const newProject = this.getProjectWithId(newProjectId);
       newProject.addItem(taskToBeEdited);
       taskToBeEdited.setProject(newProject);
     }
+
+    this.storage.editTask(taskToBeEdited);
   }
 
   getTaskWithId(todoId) {
     return this.allTodoList.find((task) => task.getTodoId() === todoId);
   }
 
-  getProjectWithId(projectId){
+  getProjectWithId(projectId) {
     return this.projectList.find((prj) => prj.getId() === projectId);
   }
 
@@ -148,23 +187,23 @@ export default class TodoProjectManagement {
     return this.allTodoList;
   }
 
-  getAllProjects(){
+  getAllProjects() {
     return this.projectList;
   }
 
-  getCurTodoListName(){
-    if (this.allTask){
+  getCurTodoListName() {
+    if (this.allTask) {
       return DefaultProjectNames.ALL_TASK;
     }
-    if (this.tmrTask){
+    if (this.tmrTask) {
       return DefaultProjectNames.PLANNED_TASK;
     }
-    if (this.curProject){
+    if (this.curProject) {
       return this.curProject.getName();
     }
-    if (this.todayTask){
+    if (this.todayTask) {
       return DefaultProjectNames.TODAY_TASK;
     }
-    return '';
+    return "";
   }
 }

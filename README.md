@@ -44,4 +44,5 @@
 - [x] Create a local storage.
 - [x] Implement add operation. if task belongs to a project, in the local storage, it will have reference to the project ID.
 - [x] initially, we have a key called "tasks" in localStorage. 
-- [ ] initially, we have a key called "projects" in localStorage.
+- [x] initially, we have a key called "projects" in localStorage.
+- [x] Crud operations for tasks and projects.
