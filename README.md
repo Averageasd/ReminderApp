@@ -1,6 +1,6 @@
 -A single page web application built using HTML, CSS, JS and Webpack.
 
-# Objectives :
+## Objectives :
 - [x] Only work with tasks for now.
 - [x] Remove task.
 - [x] Add task.
@@ -14,7 +14,7 @@
 - [x] todo-items now have IDs.
 - [x] Allow duplicate tasks.
 
-## More feature when we add custom projects :
+### More feature when we add custom projects :
 - [x] Add new project to project list on the sidebar.
 - [x] Projects have unique IDs.
 - [x] Create functions to create html non-image elements and images.
@@ -39,18 +39,18 @@
 - [x] User can remove project and items.
 - [x] Now user can choose to move any to-do item to the currently available projects.
 
-## Features when we add local storage :
+### Features when we add local storage :
 - [x] Create a local storage.
 - [x] Implement add operation. if task belongs to a project, in the local storage, it will have reference to the project ID.
 - [x] initially, we have a key called "tasks" in localStorage. 
 - [x] initially, we have a key called "projects" in localStorage.
 - [x] Crud operations for tasks and projects.
 
-# Functionalities:
+## Functionalities:
 User can create and manage their own tasks. They can also make their own to-do list more organized by creating projects that hold similar tasks.
 
-# Technologies:
+## Technologies:
 Webpack, HTML, CSS, Javascript, LocalStorage.
 
-# Notes:
+## Notes:
 This app UI design was heavily insipired by the Microsoft To-do UI. 
