@@ -309,10 +309,7 @@ body {
     overflow: hidden; */
 }
 
-.project-input {
-    display: block;
-    width: 100%;
-}
+
 
 .selected {
     border-radius: 5px;
@@ -320,6 +317,28 @@ body {
     cursor: pointer;
 }
 
-/* .edit-task-modal div{
-    background-color: red;
+.edit-task-modal{
+    min-width: 350px;
+    display: flex;
+    gap:1rem;
+    flex-direction: column;
+}
+
+
+/* .edit-task-modal .project-input {
+    width: 100%;
 } */
+
+.edit-task-modal select, .edit-task-modal input, .edit-task-modal option{
+    display: block;
+    width: 100%;
+}
+
+.edit-task-modal .accept-btn{
+    align-self: center;
+    padding: 0.5rem 3rem;
+    background-color: var(--main-background-color);
+    color:var(--color-with-red-background);
+    border-radius: 5px;
+    border: none;
+}
