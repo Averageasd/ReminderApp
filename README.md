@@ -1,6 +1,6 @@
 -A single page web application built using HTML, CSS, JS and Webpack.
 
-## Objectives :
+# Objectives :
 - [x] Only work with tasks for now.
 - [x] Remove task.
 - [x] Add task.
@@ -38,7 +38,6 @@
 - [x] When a project is deleted, all of its to-do items will also be deleted.
 - [x] User can remove project and items.
 - [x] Now user can choose to move any to-do item to the currently available projects.
-- [ ] make this code more modular. (maybe latter)
 
 ## Features when we add local storage :
 - [x] Create a local storage.
@@ -46,3 +45,12 @@
 - [x] initially, we have a key called "tasks" in localStorage. 
 - [x] initially, we have a key called "projects" in localStorage.
 - [x] Crud operations for tasks and projects.
+
+# Functionalities:
+User can create and manage their own tasks. They can also make their own to-do list more organized by creating projects that hold similar tasks.
+
+# Technologies:
+Webpack, HTML, CSS, Javascript, LocalStorage.
+
+# Notes:
+This app UI design was heavily insipired by the Microsoft To-do UI. 
